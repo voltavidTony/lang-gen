@@ -283,7 +283,7 @@ The main appeal of the lang generator is the comprehensive formatting system. Wi
 
 FES are comprised of a command word and a value word, joined by a period (`.`) and surrounded by braces (`{ }`). To have an opening brace outside of a FES, use a double opening brace (`{{`). Nested FES are not permitted.
 
-Python syntax highlighters should display these FES in a different color as a regular string. Visual Studio Code with the Python extension pack displays them like this: <str>"This is a Python string with braces ('<fmt>{{</fmt> }') around a <fmt>{command.value}</fmt> FES."</str> (Note that on GitHub, CSS styling is removed so the colors won't display)
+Python syntax highlighters should display these FES in a different color as a regular string. Visual Studio Code with the Python extension pack displays them like this: <str>"This is a Python string with braces ('<fmt>{{</fmt> }') around a <fmt>{command.value}</fmt> FES."</str>
 
 FES are comprised of the surrounding braces, lowercase letters a-z, underscores, and the joining period. The only exception is spacing values, which can be signed or unsigned integers. The following RegEx can be used to match a FES: `{([a-z]+)\.([a-z_]+|[+-]?[0-9]+)}` - capture group 1 is the command, capture group 2 the value. Generally, a regex shouldn't be used when generating langs as it will ignore malformed FES instead of throwing an error like a proper parser.
 
@@ -354,6 +354,7 @@ __Example:__ <str>"Some crossed circles:<fmt>{space.tt_margin}</fmt>OO<fmt>{spac
 1. When making multiple incremental adjustments to the LFS, it could become tedious to wait for every language to generate. To only generate 'en_us.json', comment out the for loop found in `gen_langs.py` at lines 321-323.
 2. The index file version cannot be automatically determined since different launchers choose the index file in different ways. Thus, the `index_file` mapping in `PATH` exists.
 3. `characters.py` includes information about character widths and a character width calculator. Simply run the script and a prompt will appear. Any text typed into the prompt will produce a number indicating the width of the entered text in pixels. Any unicode character can be specified using hex escape sequences, such as `\x__`, `\u____`, and `\U________`.
+4. GitHub removes and HTML and CSS tags and styling, so the example strings won't have proper color. An external MD viewer, like Visual Studio Code is required to see the colors. Here's what the examples are supposed to look like: ![Colorized Text](color_strings.png)
 
 <style>
   str {
