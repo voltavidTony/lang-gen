@@ -275,7 +275,9 @@ Step 2 also serves to validate the LFS and point out any errors encountered. Thi
 
 ### Cleanup
 
-Cleanup is performed by using features of Git, thus the commands listed in this section need to be executed from within the scripting folder. To remove any imported and modified files, issue `git checkout .` on the command line. This will reset the entire `lang-gen/` folder back to the state it was in when it was first downloaded. If you want to preserve any changes to the configurations, first issue `git add config.py`.
+Cleanup is performed through the following two Git commands:
+- `git clean -fd` will remove the files imported in the [Preparation](#preparation) step
+- `git checkout .` will remove any changes made to the scripts
 
 ## Lang Formatting
 
