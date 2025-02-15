@@ -172,28 +172,36 @@ def recombine_lang(
     lang_blocks: Iterator[tuple[str, str, int, int]], lang_key: str, lang_value: str
 ) -> str:
     # Process first LANG block
-    lang_text, caret_min, caret = apply_format(next(lang_blocks), lang_value)
+    lang_text, first_pos, caret = apply_format(next(lang_blocks), lang_value)
     if not lang_key in CENTERED_TITLES and caret_min != 0:
         lang_text = space_to_chars(caret_min) + lang_text
-        caret_min -= 1
+        first_pos -= 1
+
+    # String maximum dimensions
+    caret_min = first_pos
     caret_max = caret
 
     # Process remaining LANG blocks
     for lang_block in lang_blocks:
-        text, start, end = apply_format(lang_block, lang_value)
-        caret_min, caret_max = min(caret_min, start - 1), max(caret_max + 1, end)
+        text, start, last_pos = apply_format(lang_block, lang_value)
+        caret_min, caret_max = min(caret_min, start - 1), max(caret_max + 1, last_pos)
         lang_text += space_to_chars(start - caret - 1)
         lang_text += text
-        caret = end
+        caret = last_pos
 
     # Add required padding for centered titles
     if lang_key in CENTERED_TITLES:
+        # Center dimensions around title offset
         caret_min = INV_WIDTH // 2 - caret_min
-        caret_max = caret_max - INV_WIDTH // 2
+        caret_max -= INV_WIDTH // 2
+        first_pos = INV_WIDTH // 2 - first_pos
+        last_pos -= INV_WIDTH // 2
+
+        # Determine extra padding requirements
         if caret_min < caret_max:
-            lang_text = space_to_chars(caret_max - caret_min) + lang_text
+            lang_text = space_to_chars(caret_max - first_pos) + lang_text
         elif caret_min > caret_max:
-            lang_text += space_to_chars(caret_min - caret_max)
+            lang_text += space_to_chars(caret_min - last_pos)
 
     return lang_text
 
