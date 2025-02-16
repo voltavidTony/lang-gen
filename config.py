@@ -7,7 +7,7 @@ PATH = {
     # Path to the Minecraft JAR archive
     "mc_jar": "%AppData%/PrismLauncher/libraries/com/mojang/minecraft/1.21.4/minecraft-1.21.4-client.jar",
     # Filepath to save the resource pack to
-    "rp_dest": "%AppData%/PrismLauncher/instances/1.21.4/minecraft/resourcepacks/Redstone Tweaks 2.4.7.zip",
+    "rp_dest": "%AppData%/PrismLauncher/instances/1.21.4/.minecraft/resourcepacks/Redstone Tweaks 2.4.7.zip",
 }
 
 # Space around container inventory GUI
