@@ -205,9 +205,11 @@ GLYPHS: dict[str, str] = {}
 with open(_path.join(_SCRIPT_ROOT, "../assets/minecraft/font/default.json")) as _def_file:
     for _glyph in _load(_def_file)["providers"]:
         GLYPHS[_glyph["file"].split("/")[-1][:-4]] = _glyph["chars"][0]
-        CHAR_WIDTHS[_glyph["chars"][0]] = _Img.open(
+        _png = _Img.open(
             _path.join(_SCRIPT_ROOT, "../assets", _glyph["file"].replace(":", "/textures/"))
-        ).width
+        )
+        # TODO: Investigate further exactly how the game considers character widths for non-integer scaling amounts
+        CHAR_WIDTHS[_glyph["chars"][0]] = _png.width * _glyph["height"] // _png.height
     del GLYPHS["empty"]
 
 # Calculate spacing character widths
