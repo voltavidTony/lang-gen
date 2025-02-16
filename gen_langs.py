@@ -11,41 +11,60 @@ from config import *
 from file_tasks import *
 
 
-def apply_format(lang_block: tuple[str, str, int, int], lang_value: str) -> tuple[str, int, int]:
+def apply_format(
+    lang_block: tuple[str, str, int, int], lang_value: str, gui_width: int
+) -> tuple[str, int, int]:
     text, alignment, before_space, after_space = lang_block
 
     # Insert original LANG value
     text = text.replace(f"{{{LANG_TAG}.{LANG_VALUE}}}", lang_value)
 
     # Determine starting and ending positions of a text segment
-    width = calc_text_width(text)
+    text_width = calc_text_width(text)
     if alignment == ALIGN_BEFORE:
-        start = -width - after_space
+        start = -text_width - after_space
     elif alignment == ALIGN_LEFT:
         start = before_space
     elif alignment == ALIGN_MIDDLE:
-        start = (INV_WIDTH + 1) // 2 - (width + after_space - before_space + 1) // 2
+        start = gui_width // 2 - (text_width + after_space - before_space + 1) // 2
     elif alignment == ALIGN_RIGHT:
-        start = INV_WIDTH - width - after_space
+        start = gui_width - text_width - after_space
     elif alignment == ALIGN_AFTER:
-        start = INV_WIDTH + before_space
+        start = gui_width + before_space
     else:
         start = 0
 
-    return text, start, start + width
+    return text, start, start + text_width
 
 
 def arrange_segments(
-    lang_formatters: list[tuple[str, str | int]], alignment: str
+    lang_formatters: list[tuple[str, str | int]], alignment: str, lang_key: str
 ) -> tuple[str, str, int, int]:
+
+    # Get GUI dimensions
+    gui_width, title_align, title_offset = GUI_TITLES.get(lang_key, GUI_TITLE_DEFAULT)
+    margin = INV_MARGIN if lang_key in GUI_TITLES else TT_MARGIN
+
+    # Determine implicit GUI spaces
+    before_space, after_space = 0, 0
+    if alignment == ALIGN_BEFORE:
+        before_space, after_space = 0, margin
+    elif alignment == ALIGN_AFTER:
+        before_space, after_space = margin, 0
+    elif alignment == ALIGN_START:
+        if title_align == ALIGN_LEFT:
+            before_space, after_space = title_offset, 0
+            alignment = ALIGN_LEFT
+        elif title_align == ALIGN_MIDDLE:
+            before_space, after_space = gui_width - 2 * title_offset, 0
+            alignment = ALIGN_MIDDLE
+
     # Trim space at the start of the section
-    before_space = 0
-    while lang_formatters[0][0] == SPACE_TAG:
+    while lang_formatters and lang_formatters[0][0] == SPACE_TAG:
         before_space += lang_formatters.pop(0)[1]
 
     # Trim space at the end of the section
-    after_space = 0
-    while lang_formatters[-1][0] == SPACE_TAG:
+    while lang_formatters and lang_formatters[-1][0] == SPACE_TAG:
         after_space += lang_formatters.pop()[1]
 
     return (
@@ -144,26 +163,32 @@ def parse_escape_sequence(ftype: str, fvalue: str, lang_key: str) -> tuple[str, 
 
 
 def precompute_format(lang_key: str) -> list[tuple[str, str, int, int]]:
-    cur_section = ALIGN_MIDDLE if lang_key in CENTERED_TITLES else ALIGN_LEFT
+    cur_section = ALIGN_START
     lang_sections = []
     section_builder = []
 
     # Arrange each sequence of segments to its appropriate section
     for ftype, fvalue in segment_lang_format(lang_key):
         if ftype == ALIGN_TAG:
-            # Apply current section
+            if not lang_key in GUI_TITLES and not fvalue in ALIGNMENTS_TT:
+                # Disallowed alignment value
+                raise ValueError(
+                    f"Invalid alignment value '{fvalue}' in {lang_key} Non-inventory titles only support "
+                    + str(ALIGNMENTS_TT)[1:-1]
+                )
+
             if section_builder:
-                lang_sections.append(arrange_segments(section_builder, cur_section))
+                # Arrange current section
+                segment = arrange_segments(section_builder, cur_section, lang_key)
+                if segment[0]:
+                    lang_sections.append(segment)
+                # Start new section
                 section_builder = []
-            # Start new section
+
             cur_section = fvalue
         else:
             # Accumulate section
             section_builder.append((ftype, fvalue))
-
-    if section_builder:
-        # Accumulate remainder
-        lang_sections.append(arrange_segments(section_builder, cur_section))
 
     return sorted(lang_sections, key=lambda ls: ALIGNMENTS.index(ls[1]))
 
@@ -171,10 +196,15 @@ def precompute_format(lang_key: str) -> list[tuple[str, str, int, int]]:
 def recombine_lang(
     lang_blocks: Iterator[tuple[str, str, int, int]], lang_key: str, lang_value: str
 ) -> str:
+    # TODO: Figure out how to sort the segments in a way that minimizes caret travel
+
+    # Get GUI dimensions
+    gui_width, title_align, title_offset = GUI_TITLES.get(lang_key, GUI_TITLE_DEFAULT)
+
     # Process first LANG block
-    lang_text, first_pos, caret = apply_format(next(lang_blocks), lang_value)
-    if not lang_key in CENTERED_TITLES and caret_min != 0:
-        lang_text = space_to_chars(caret_min) + lang_text
+    lang_text, first_pos, caret = apply_format(next(lang_blocks), lang_value, gui_width)
+    if title_align == ALIGN_LEFT and first_pos != title_offset:
+        lang_text = space_to_chars(first_pos - title_offset) + lang_text
         first_pos -= 1
 
     # String maximum dimensions
@@ -183,19 +213,19 @@ def recombine_lang(
 
     # Process remaining LANG blocks
     for lang_block in lang_blocks:
-        text, start, last_pos = apply_format(lang_block, lang_value)
+        text, start, last_pos = apply_format(lang_block, lang_value, gui_width)
         caret_min, caret_max = min(caret_min, start - 1), max(caret_max + 1, last_pos)
         lang_text += space_to_chars(start - caret - 1)
         lang_text += text
         caret = last_pos
 
     # Add required padding for centered titles
-    if lang_key in CENTERED_TITLES:
+    if title_align == ALIGN_MIDDLE:
         # Center dimensions around title offset
-        caret_min = INV_WIDTH // 2 - caret_min
-        caret_max -= INV_WIDTH // 2
-        first_pos = INV_WIDTH // 2 - first_pos
-        last_pos -= INV_WIDTH // 2
+        caret_min = title_offset - caret_min
+        caret_max -= title_offset
+        first_pos = title_offset - first_pos
+        last_pos -= title_offset
 
         # Determine extra padding requirements
         if caret_min < caret_max:
@@ -282,6 +312,9 @@ def segment_lang_format(lang_key: str) -> Generator[tuple[str, str | int], Any, 
     if text_builder:
         # Finish current segment
         yield TEXT_TAG, text_builder
+
+    # This allows 'precompute_lang' to close the last section without extra logic
+    yield ALIGN_TAG, ALIGN_START
 
 
 def space_to_chars(amount: int) -> str:
