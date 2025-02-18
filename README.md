@@ -253,6 +253,8 @@ The following steps describe the general process of configuring the lang generat
 
 4. Lastly, if desired, a resource pack options file can be generated along with each lang file by defining the content in `RPO_CONTENT`. Keep in mind that LFS are not supported, instead only the ability to copy the value of the generated lang exists. To do this, simply set the value of a mapping in `RPO_CONTENT` to the key of a mapping in `LANG`. To prevent the generation of RPO files, do not remove `RPO_CONTENT` entirely, just remove its contents so that it still exists but is empty.
 
+    > __Note:__ The value in `RPO_CONTENT` will only be replaced if it references a generated lang. If the entry can't be found, then the value will not be replaced. The output of the script indicates any missing values in the game's localization.
+
 ### Preparation
 
 1. Ensure that the [Setup](#setup) requirements are met.
