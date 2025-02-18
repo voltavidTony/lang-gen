@@ -251,7 +251,7 @@ The following steps describe the general process of configuring the lang generat
 
 3. `LANG` contains the LFS, which are used to build the lang strings that appear in-game. Each lang key maps to a string consisting of a series of text characters and FES, further explained in the [Lang Formatting](#lang-formatting) section.
 
-4. Lastly, if desired, a resource pack options file can be generated along with each lang file. Keep in mind that no processing is done on these files, so each one will have identical contents. The contents of the RPO file are defined in `RPO_CONTENT`. To prevent the generation of RPO files, do not remove `RPO_CONTENT` entirely, just remove its contents so that it still exists but is empty.
+4. Lastly, if desired, a resource pack options file can be generated along with each lang file by defining the content in `RPO_CONTENT`. Keep in mind that LFS are not supported, instead only the ability to copy the value of the generated lang exists. To do this, simply set the value of a mapping in `RPO_CONTENT` to the key of a mapping in `LANG`. To prevent the generation of RPO files, do not remove `RPO_CONTENT` entirely, just remove its contents so that it still exists but is empty.
 
 ### Preparation
 
