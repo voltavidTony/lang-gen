@@ -103,7 +103,14 @@ def generate_lang(
     # Generate ResourcePackOptions file
     if RPO_CONTENT:
         with open(f"{lang_dest}.rpo", "w") as rpo_file:
-            dump(RPO_CONTENT, rpo_file)
+            dump(
+                {
+                    # Replace values referencing the generated langs
+                    rpo_key: lang_dest_strings.get(rpo_value, rpo_value)
+                    for rpo_key, rpo_value in RPO_CONTENT.items()
+                },
+                rpo_file,
+            )
 
 
 def parse_escape_sequence(ftype: str, fvalue: str, lang_key: str) -> tuple[str, str | int]:
