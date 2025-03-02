@@ -1,13 +1,13 @@
 # File path definitions to access game files
 PATH = {
     # The Minecraft assets folder (contains 'indexes', 'objects', and 'skins' subfolders)
-    "assets": "%AppData%/PrismLauncher/assets",
+    "assets": "%AppData%/.minecraft/assets",
     # Which index file to use when looking for LANG files (in the 'indexes' subfolder)
     "index_file": "19.json",
     # Path to the Minecraft JAR archive
-    "mc_jar": "%AppData%/PrismLauncher/libraries/com/mojang/minecraft/1.21.4/minecraft-1.21.4-client.jar",
+    "mc_jar": "%AppData%/.minecraft/versions/1.21.4/1.21.4.jar",
     # Filepath to save the resource pack to
-    "rp_dest": "%AppData%/PrismLauncher/instances/1.21.4/.minecraft/resourcepacks/Redstone Tweaks 2.4.7.zip",
+    "rp_dest": "%AppData%/.minecraft/resourcepacks/Redstone Tweaks 2.4.7.zip",
 }
 
 # Space around container inventory GUI
