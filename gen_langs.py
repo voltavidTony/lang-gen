@@ -12,11 +12,12 @@ from file_tasks import *
 
 
 def apply_format(
-    lang_block: tuple[str, str, int, int], lang_value: str, gui_width: int
+    lang_block: tuple[str, str, int, int], lang_value: str, lang_unit: str, gui_width: int
 ) -> tuple[str, int, int]:
     text, alignment, before_space, after_space = lang_block
 
-    # Insert original LANG value
+    # Insert original LANG unit and value
+    text = text.replace(f"{{{LANG_TAG}.{LANG_UNIT}}}", lang_unit)
     text = text.replace(f"{{{LANG_TAG}.{LANG_VALUE}}}", lang_value)
 
     # Determine starting and ending positions of a text segment
@@ -91,13 +92,14 @@ def generate_lang(
         lang_asset = load(lang_asset)
 
     # Generate formatted lang strings
+    lang_unit = lang_file.split(".")[0]
     lang_content = {}
     rpo_content = {}
     for lang_key, expansion, exclusion, lang_blocks in lang_format:
 
         # Generate the formatted lang string
         lang_value = lang_asset.get(lang_key, "")
-        lang_gen = recombine_lang(iter(lang_blocks), lang_key, lang_value)
+        lang_gen = recombine_lang(iter(lang_blocks), lang_key, lang_value, lang_unit)
 
         # Save it to the lang data
         if not exclusion == "+":
@@ -152,12 +154,12 @@ def parse_escape_sequence(ftype: str, fvalue: str, lang_key: str) -> tuple[str, 
 
     # Original LANG value escape sequence
     elif ftype == LANG_TAG:
-        if not fvalue == LANG_VALUE:
+        if not fvalue in (LANG_UNIT, LANG_VALUE):
             raise ValueError(
-                f"Invalid escape sequence '{LANG_TAG}.{fvalue}' in {lang_key} "
-                f"Expect '{LANG_TAG}.{LANG_VALUE}'"
+                f"Invalid lang value '{fvalue}' in {lang_key} "
+                f"Expect one of '{LANG_UNIT}', '{LANG_VALUE}'"
             )
-        return TEXT_TAG, f"{{{LANG_TAG}.{LANG_VALUE}}}"
+        return TEXT_TAG, f"{{{LANG_TAG}.{fvalue}}}"
 
     # Spacing escape sequence
     elif ftype == SPACE_TAG:
@@ -234,7 +236,7 @@ def precompute_format(lfs_key: str) -> tuple[str, str, str, list[tuple[str, str,
 
 
 def recombine_lang(
-    lang_blocks: Iterator[tuple[str, str, int, int]], lang_key: str, lang_value: str
+    lang_blocks: Iterator[tuple[str, str, int, int]], lang_key: str, lang_value: str, lang_unit: str
 ) -> str:
     # TODO: Figure out how to sort the segments in a way that minimizes caret travel
 
@@ -242,7 +244,7 @@ def recombine_lang(
     gui_width, title_align, title_offset = GUI_TITLES.get(lang_key, GUI_TITLE_DEFAULT)
 
     # Process first LANG block
-    lang_text, first_pos, caret = apply_format(next(lang_blocks), lang_value, gui_width)
+    lang_text, first_pos, caret = apply_format(next(lang_blocks), lang_value, lang_unit, gui_width)
     if title_align == ALIGN_LEFT and first_pos != title_offset:
         lang_text = space_to_chars(first_pos - title_offset) + lang_text
         first_pos -= 1
@@ -253,7 +255,7 @@ def recombine_lang(
 
     # Process remaining LANG blocks
     for lang_block in lang_blocks:
-        text, start, last_pos = apply_format(lang_block, lang_value, gui_width)
+        text, start, last_pos = apply_format(lang_block, lang_value, lang_unit, gui_width)
         caret_min, caret_max = min(caret_min, start - 1), max(caret_max + 1, last_pos)
         lang_text += space_to_chars(start - caret - 1)
         lang_text += text

@@ -343,7 +343,12 @@ __Example:__ <str>"Here is a stick: <fmt>{glyph.stick}</fmt>!"</str>
 
 ### Lang Placeholder
 
-This FES is used to insert the original lang value of the current language file, which allows the game's existing localization to be used. The lang FES can appear anywhere and multiple times in the LFS.
+This FES is used to insert one of two values using the game's existing localization:
+
+1. The original lang value of the current language file with `.value`
+2. The current lang unit (language designator) with `.unit` (for instance 'en_us')
+
+The lang FES can appear anywhere and multiple times in the LFS.
 
 __Example:__ <str>"₊ ⊹<fmt>{lang.value}</fmt>⊹ ࣪ ˖"</str> (item name decorated with sparkles)
 

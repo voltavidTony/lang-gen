@@ -107,7 +107,7 @@ LANG = {
     "${discs}jukebox_song.minecraft.wait": "{lang.value} {format.white}{glyph.comparator}{format.reset}12{format.white}{glyph.clock}{format.reset}3:59.1",
     "${discs}jukebox_song.minecraft.ward": "{lang.value} {format.white}{glyph.comparator}{format.reset}10{format.white}{glyph.clock}{format.reset}4:12.1",
     "+condition": "false",
-    "+fallback": "assets/minecraft/lang/respackopts/en_us.json",
+    "+fallback": "assets/minecraft/lang/respackopts/{lang.unit}.json",
 }
 
 # STOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOP #
@@ -211,7 +211,8 @@ GUI_TITLES = {
 # The default text alignment for non-inventory titles (i.e. tooltips)
 GUI_TITLE_DEFAULT = (0, ALIGN_LEFT, 4)
 
-# Allowable lang escape sequence value constant
+# Allowable lang escape sequence value constants
+LANG_UNIT = "unit"
 LANG_VALUE = "value"
 
 # Additional definitions for space values based on in-game GUI dimensions
