@@ -80,37 +80,46 @@ def arrange_segments(
 
 
 def generate_lang(
-    lang_source: str, lang_dest: str, lang_format: dict[str, list[tuple[str, str, int, int]]]
+    lang_asset: str,
+    lang_file: str,
+    lang_format: dict[str, tuple[str, str, bool, list[tuple[str, str, int, int]]]],
 ) -> None:
-    print("Processing", path.basename(lang_source), "->", lang_dest)
+    print("Processing", path.basename(lang_asset), "->", lang_file)
 
-    # Generate formatted LANG strings
-    with open(lang_source, encoding="utf-8") as lang_file:
-        lang_dest_strings = {
-            lang_key: recombine_lang(iter(lang_format[lang_key]), lang_key, lang_value)
-            for lang_key, lang_value in load(lang_file).items()
-            if lang_key in LANG
-        }
+    # Obtain game lang strings
+    with open(lang_asset, encoding="utf-8") as lang_asset:
+        lang_asset = load(lang_asset)
 
-    # Detect if some keys are missing from the original LANG file
-    if len(lang_dest_strings) < len(LANG):
-        print("Some keys were missing in this lang file: ", LANG.keys() - lang_dest_strings.keys())
+    # Generate formatted lang strings
+    lang_content = {}
+    rpo_content = {}
+    for lang_key, expansion, exclusion, lang_blocks in lang_format:
 
-    # Save LANG strings to file
-    with open(lang_dest, "w", encoding="utf-8") as lang_file:
-        dump(lang_dest_strings, lang_file)
+        # Generate the formatted lang string
+        lang_value = lang_asset.get(lang_key, "")
+        lang_gen = recombine_lang(iter(lang_blocks), lang_key, lang_value)
 
-    # Generate ResourcePackOptions file
-    if RPO_CONTENT:
-        with open(f"{lang_dest}.rpo", "w") as rpo_file:
-            dump(
-                {
-                    # Replace values referencing the generated langs
-                    rpo_key: lang_dest_strings.get(rpo_value, rpo_value)
-                    for rpo_key, rpo_value in RPO_CONTENT.items()
-                },
-                rpo_file,
-            )
+        # Save it to the lang data
+        if not exclusion == "+":
+            # Every lang_key that is part of lang_content should exist in lang_asset
+            if not lang_value:
+                print("The following key is missing in this file: ", lang_key)
+            lang_content[lang_key] = lang_gen
+
+        # Save it to the RPO data
+        if GENERATE_RPO and not exclusion == "-":
+            if expansion:
+                lang_key = f"${{{expansion}}}{lang_key}"
+            rpo_content[lang_key] = lang_gen
+
+    # Save lang strings to file
+    with open(lang_file, "w", encoding="utf-8") as lang_out:
+        dump(lang_content, lang_out)
+
+    # Generate RPO file
+    if GENERATE_RPO:
+        with open(f"{lang_file}.rpo", "w") as rpo_out:
+            dump(rpo_content, rpo_out)
 
 
 def parse_escape_sequence(ftype: str, fvalue: str, lang_key: str) -> tuple[str, str | int]:
@@ -169,18 +178,37 @@ def parse_escape_sequence(ftype: str, fvalue: str, lang_key: str) -> tuple[str, 
         raise ValueError(f"Invalid escape sequence command '{ftype}' in {lang_key}")
 
 
-def precompute_format(lang_key: str) -> list[tuple[str, str, int, int]]:
+def parse_key(lfs_key: str) -> tuple[str, str, str]:
+    # Check if LFS contains an exclusion modifier
+    exclusion, lang_key = (lfs_key[0], lfs_key[1:]) if lfs_key[0] in "+-" else ("", lfs_key)
+
+    # Get leading RPO expansion in LFS key
+    try:
+        expansion, lang_key = (
+            lang_key[2:].split("}") if lang_key.startswith("${") else ("", lang_key)
+        )
+    except ValueError:
+        raise ValueError(
+            f"Malformed lang key '{lfs_key}' Only one leading RPO expansion is allowed"
+        )
+
+    return lang_key, expansion, exclusion
+
+
+def precompute_format(lfs_key: str) -> tuple[str, str, str, list[tuple[str, str, int, int]]]:
     cur_section = ALIGN_START
     lang_sections = []
     section_builder = []
 
+    lang_key, expansion, exclusion = parse_key(lfs_key)
+
     # Arrange each sequence of segments to its appropriate section
-    for ftype, fvalue in segment_lang_format(lang_key):
+    for ftype, fvalue in segment_lang_format(lfs_key):
         if ftype == ALIGN_TAG:
             if not lang_key in GUI_TITLES and not fvalue in ALIGNMENTS_TT:
                 # Disallowed alignment value
                 raise ValueError(
-                    f"Invalid alignment value '{fvalue}' in {lang_key} Non-inventory titles only support "
+                    f"Invalid alignment value '{fvalue}' in {lfs_key} Non-inventory titles only support "
                     + str(ALIGNMENTS_TT)[1:-1]
                 )
 
@@ -197,7 +225,12 @@ def precompute_format(lang_key: str) -> list[tuple[str, str, int, int]]:
             # Accumulate section
             section_builder.append((ftype, fvalue))
 
-    return sorted(lang_sections, key=lambda ls: ALIGNMENTS.index(ls[1]))
+    return (
+        lang_key,
+        expansion,
+        exclusion,
+        sorted(lang_sections, key=lambda ls: ALIGNMENTS.index(ls[1])),
+    )
 
 
 def recombine_lang(
@@ -344,7 +377,7 @@ def space_to_chars(amount: int) -> str:
 if __name__ == "__main__":
     # Pre-compute LANG format strings
     print("Pre-computing LANG format strings..")
-    lang_format = {lang_key: precompute_format(lang_key) for lang_key in LANG}
+    lang_format = [precompute_format(lang_key) for lang_key in LANG]
 
     # LANG file generation
     print("Generating LANG files..")

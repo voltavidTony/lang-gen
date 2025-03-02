@@ -21,7 +21,8 @@ This set of scripts is designed to aid in the creation of formatted item names, 
 >    3. [Custom Glyphs](#custom-glyphs)
 >    4. [Lang Placeholder](#lang-placeholder)
 >    5. [Spacing](#spacing)
-> 6. [Additional Notes](#additional-notes)
+> 6. [ResPackOpts](#respackopts)
+> 7. [Additional Notes](#additional-notes)
 </details>
 
 ---
@@ -232,28 +233,26 @@ These steps are explained below:
 
 ### Configuration
 
-All configuration is contained in `config.py`. Only this file needs to be modified when changing the LFS. The lang generator is pre-configured for the Redstone Tweaks resource pack by RexxStone and game version 1.21.4.
+All configuration is contained in `config.py`. Only this file needs to be modified when changing the LFS. The lang generator is pre-configured for the Redstone Tweaks resource pack by RexxStone and game version 1.21.4 installed via the official launcher.
 
 > __Note:__ Only the top half of `config.py` should be edited. Everything below the "STOP" banner should remain unchaged to ensure correct operation of the lang generator.
 
 The following steps describe the general process of configuring the lang generator:
 
-1. Ensure all three paths are correct:
+1. Ensure all four paths are correct:
 
-    - `assets` is the path to the assets folder in the game files, which contains the indexes, objects, and skins sub-folders
-    - `index_file` is the file name of the index file to use for generation. This configuration exists to allow the generation of lang strings for older versions of the game, which may use a different set of lang keys
-    - `mc_jar` is the path to the JAR file of the target game version
-    - `rp_dest` is the filepath where the lang generator automatically re-compresses the extracted resource pack to. To prevent this, simply make `rp_dest` map to an empty string
+   - `assets` is the path to the assets folder in the game files, which contains the indexes, objects, and skins sub-folders
+   - `index_file` is the file name of the index file to use for generation. This configuration exists to allow the generation of lang strings for older versions of the game, which may use a different set of lang keys
+   - `mc_jar` is the path to the JAR file of the target game version
+   - `rp_dest` is the filepath where the lang generator automatically re-compresses the extracted resource pack to. To prevent this, simply make `rp_dest` map to an empty string
 
-    > __Note:__ `assets`, `mc_jar`, and `rp_dest` must be absolute paths, but can contain shell symbols such as the tilde (`~`) for the home directory, or `%AppData%` if on Windows
+   > __Note:__ `assets`, `mc_jar`, and `rp_dest` must be absolute paths, but can contain shell symbols such as the tilde (`~`) for the home directory or `%AppData%` if on Windows
 
 2. If common amounts of space, measured in UI pixels, are used in the LFS, they can be added to `SPACE` as named values. This allows spacing values to be referenced by name instead of by value, allowing the positioning of multiple elements to be changed in one spot. Additionally, there are eight pre-defined spacing values seen towards the bottom of `config.py`, including the margins around the inventory and tooltip GUIs. These margins are defined by the `INV_MARGIN` and `TT_MARGIN` values in `config.py`, and can be edited to change the positions of the before- and after-aligned text segments (more about those in the [Alignment](#alignment) section)
 
-3. `LANG` contains the LFS, which are used to build the lang strings that appear in-game. Each lang key maps to a string consisting of a series of text characters and FES, further explained in the [Lang Formatting](#lang-formatting) section.
+3. If the target resource pack uses ResPackOpts, then an RPO file can be generated alongside each lang file by setting `GENERATE_RPO` to `True`. If only the lang files should be generated, set this value to `False`. Whether this feature is enabled does not affect the rules of the LFS contained in `LANG`.
 
-4. Lastly, if desired, a resource pack options file can be generated along with each lang file by defining the content in `RPO_CONTENT`. Keep in mind that LFS are not supported, instead only the ability to copy the value of the generated lang exists. To do this, simply set the value of a mapping in `RPO_CONTENT` to the key of a mapping in `LANG`. To prevent the generation of RPO files, do not remove `RPO_CONTENT` entirely, just remove its contents so that it still exists but is empty.
-
-    > __Note:__ The value in `RPO_CONTENT` will only be replaced if it references a generated lang. If the entry can't be found, then the value will not be replaced. The output of the script indicates any missing values in the game's localization.
+4. `LANG` contains the LFS, which are used to build the lang strings that appear in-game. Each lang key maps to a string consisting of a series of text characters and FES, further explained in the [Lang Formatting](#lang-formatting) section. Special RPO rules apply to the lang keys, explained in the [ResPackOpts](#respackopts) section.
 
 ### Preparation
 
@@ -267,7 +266,7 @@ Finally, the lang strings can be generated. Simply execute the `gen_langs.py` sc
 
 1. Load character map - The lang generator computes the width of each character supported by the game. If the resource pack contains `accented.png`, `ascii.png`, and/or `nonlatin_european.png`, it will use those instead of the vanilla versions. `ascii_sga.png` and `asciillager.png` are not used.
 2. Pre-compute LFS - The lang generator processes the LFS as much as possible before the original lang values are inserted to reduce the amount of repeat computation for each language in the game
-3. Lang generation - The original lang value is inserted into the LFS, and all of its sections are arranged and rendered into the final output, which is stored in the resulting lang files
+3. Lang generation - The original lang value is inserted into the LFS, and all of its sections are arranged and rendered into the final output, which is stored in the resulting lang files. This step also generates the RPO files if enabled
 
 Step 2 also serves to validate the LFS and point out any errors encountered. This ensures that only valid LFSs make it into step 3 which generates the files. The error messages point out what error has occurred in which LFS, making it easy to locate it in the configuration.
 
@@ -358,9 +357,23 @@ Under the hood, leading and trailing spaces are stripped to eliminate leftover i
 
 __Example:__ <str>"Some crossed circles:<fmt>{space.tt_margin}</fmt>OO<fmt>{space.-12}</fmt>XX"</str> (the O's and X's are overlapping)
 
+## ResPackOpts
+
+ResPackOpts is a mod by JFronny enabling configurable resource packs. In the case of lang files, additional RPO files are provided alongside the vanilla-compatible lang files to enable advanced features such as choosing different versions of a lang string or dynamically generated values.
+
+The support for RPO files changes the format of the lang keys in the `LANG` configuration by introducing two new rules:
+
+1. The lang key can start with an exclusion modifier which limits the generated lang to only being stored in one of the two generated files. The plus (`+`) restricts the generated lang to only the RPO file, the minus (`-`) to only the vanilla lang file. This can be used in combination with the 2nd rule to specify variants of the same lang string.
+
+   > __Hint:__ Which exclusion modifier does what can be remembered like this: ResPackOpts _adds_ QoL features to resource packs, which is definitely a _plus_, since vanilla resource packs _lack_ configurability, which is a _minus_ for the game!
+
+2. An optional RPO expansion can appear after the tilde of the 1st rule and before the game lang key. Note that only one RPO expansion in that position can appear in the lang key.
+
+To include RPO expansions in the LFS, simply escape the opening brace so that the lang generator doesn't try to parse it as a FES. Example: `"${{color_switch}..."`
+
 ## Additional Notes
 
-1. When making multiple incremental adjustments to the LFS, it could become tedious to wait for every language to generate. To only generate 'en_us.json', comment out the for loop found in `gen_langs.py` at lines 344-346.
+1. When making multiple incremental adjustments to the LFS, it could become tedious to wait for every language to generate. To only generate 'en_us.json', comment out the for loop found in `gen_langs.py` at lines 389-391.
 2. The index file version cannot be automatically determined since different launchers choose the index file in different ways. Thus, the `index_file` mapping in `PATH` exists.
 3. `characters.py` includes information about character widths and a character width calculator. Simply run the script and a prompt will appear. Any text typed into the prompt will produce a number indicating the width of the entered text in pixels. Any unicode character can be specified using hex escape sequences, such as `\x__`, `\u____`, and `\U________`.
 4. GitHub removes and HTML and CSS tags and styling, so the example strings won't have proper color. An external MD viewer, like Visual Studio Code is required to see the colors. Here's what the examples are supposed to look like: ![Colorized Text](color_strings.png)
