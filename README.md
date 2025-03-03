@@ -372,7 +372,9 @@ The support for RPO files changes the format of the lang keys in the `LANG` conf
 
    > __Hint:__ Which exclusion modifier does what can be remembered like this: ResPackOpts _adds_ QoL features to resource packs, which is definitely a _plus_, since vanilla resource packs _lack_ configurability, which is a _minus_ for the game!
 
-2. An optional RPO expansion can appear after the tilde of the 1st rule and before the game lang key. Note that only one RPO expansion in that position can appear in the lang key.
+2. An optional RPO expansion can appear at the start of the lang key (ignoring the exclusion modifier). The RPO expansion will appear in the RPO file, but not the vanilla lang file, meaning that it can be used in a lang key that generates in both files. For instance, `"${chest_exp}container.chest": ...` will generate as `"${chest_exp}container.chest": ...` in the RPO file and `"container.chest": ...` in the vanilla lang file.
+
+These two rules are the only parsing performed on the lang keys - any FES or RPO expansions in other positions will be copied verbatim. Furthermore, if the remainder of the lang key after removing the exclusion modifier and leading RPO expansion is not a lang key in the game's lang file, then the `{lang.value}` FES will contain a placeholder value. For instance, `"some.bad.lang.key": "It is a {lang.value}."` will generate as `"some.bad.lang.key": "It is a <?>."` in the output files.
 
 To include RPO expansions in the LFS, simply escape the opening brace so that the lang generator doesn't try to parse it as a FES. Example: `"${{color_switch}..."`
 

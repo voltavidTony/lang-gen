@@ -215,6 +215,13 @@ GUI_TITLE_DEFAULT = (0, ALIGN_LEFT, 4)
 LANG_UNIT = "unit"
 LANG_VALUE = "value"
 
+# The text to insert when using the lang.value FES if a lang string can't be found
+MISSING_KEY = "<?>"
+
+# The exclusion modifiers used in the lang keys
+ONLY_LANG = "-"
+ONLY_RPO = "+"
+
 # Additional definitions for space values based on in-game GUI dimensions
 SPACE.update(
     {

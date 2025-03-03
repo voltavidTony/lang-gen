@@ -98,18 +98,18 @@ def generate_lang(
     for lang_key, expansion, exclusion, lang_blocks in lang_format:
 
         # Generate the formatted lang string
-        lang_value = lang_asset.get(lang_key, "")
+        lang_value = lang_asset.get(lang_key, MISSING_KEY)
         lang_gen = recombine_lang(iter(lang_blocks), lang_key, lang_value, lang_unit)
 
         # Save it to the lang data
-        if not exclusion == "+":
+        if not exclusion == ONLY_RPO:
             # Every lang_key that is part of lang_content should exist in lang_asset
             if not lang_value:
                 print("The following key is missing in this file: ", lang_key)
             lang_content[lang_key] = lang_gen
 
         # Save it to the RPO data
-        if GENERATE_RPO and not exclusion == "-":
+        if GENERATE_RPO and not exclusion == ONLY_LANG:
             if expansion:
                 lang_key = f"${{{expansion}}}{lang_key}"
             rpo_content[lang_key] = lang_gen
@@ -182,17 +182,19 @@ def parse_escape_sequence(ftype: str, fvalue: str, lang_key: str) -> tuple[str, 
 
 def parse_key(lfs_key: str) -> tuple[str, str, str]:
     # Check if LFS contains an exclusion modifier
-    exclusion, lang_key = (lfs_key[0], lfs_key[1:]) if lfs_key[0] in "+-" else ("", lfs_key)
+    if lfs_key[0] in (ONLY_LANG, ONLY_RPO):
+        exclusion, lang_key = lfs_key[0], lfs_key[1:]
+    else:
+        exclusion, lang_key = "", lfs_key
 
     # Get leading RPO expansion in LFS key
-    try:
-        expansion, lang_key = (
-            lang_key[2:].split("}") if lang_key.startswith("${") else ("", lang_key)
-        )
-    except ValueError:
-        raise ValueError(
-            f"Malformed lang key '{lfs_key}' Only one leading RPO expansion is allowed"
-        )
+    if lang_key.startswith("${"):
+        idx = lang_key.find("}")
+        if idx == -1:
+            raise ValueError(f"Unfinished RPO expansion in '{lfs_key}'")
+        expansion, lang_key = lang_key[2:idx], lang_key[idx + 1 :]
+    else:
+        expansion = ""
 
     return lang_key, expansion, exclusion
 
