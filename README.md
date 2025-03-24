@@ -42,7 +42,6 @@ Python 3 and the following non-builtin modules are required to run the scripts:
 
 - numpy (`pip install numpy`)
 - PIL (`pip install Pillow`)
-- requests (`pip install requests`)
 
 To download the scripts, navigate to the root directory of an extracted copy of the target resource pack and run `git clone https://github.com/voltavidTony/lang-gen.git`. Make sure the following files and folders are present and in the correct locations (Note that any files not used by the lang generator are omitted from the file tree for brevity).
 
