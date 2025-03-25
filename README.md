@@ -253,6 +253,8 @@ The following steps describe the general process of configuring the lang generat
 
 4. `LANG` contains the LFS, which are used to build the lang strings that appear in-game. Each lang key maps to a string consisting of a series of text characters and FES, further explained in the [Lang Formatting](#lang-formatting) section. Special RPO rules apply to the lang keys, explained in the [ResPackOpts](#respackopts) section.
 
+5. `EXPANSIONS` contains the RPO expansions for the target resource pack, which allow parts of the langs to contain dynamic values. If expansions are not used, then `EXPANSIONS` should be made empty, not removed.
+
 ### Preparation
 
 1. Ensure that the [Setup](#setup) requirements are met.
@@ -367,22 +369,29 @@ ResPackOpts is a mod by JFronny enabling configurable resource packs. In the cas
 
 The support for RPO files changes the format of the lang keys in the `LANG` configuration by introducing two new rules:
 
-1. The lang key can start with an exclusion modifier which limits the generated lang to only being stored in one of the two generated files. The plus (`+`) restricts the generated lang to only the RPO file, the minus (`-`) to only the vanilla lang file. This can be used in combination with the 2nd rule to specify variants of the same lang string.
+1. The lang key can start with an exclusion modifier which limits the generated lang to only be stored in one of the two generated files. The plus (`+`) restricts the generated lang to only the RPO-compatible lang file, the minus (`-`) to only the vanilla-compatible lang file. This can be used in combination with the 2nd rule to specify variants of the same lang string.
 
    > __Hint:__ Which exclusion modifier does what can be remembered like this: ResPackOpts _adds_ QoL features to resource packs, which is definitely a _plus_, since vanilla resource packs _lack_ configurability, which is a _minus_ for the game!
 
-2. An optional RPO expansion can appear at the start of the lang key (ignoring the exclusion modifier). The RPO expansion will appear in the RPO file, but not the vanilla lang file, meaning that it can be used in a lang key that generates in both files. For instance, `"${chest_exp}container.chest": ...` will generate as `"${chest_exp}container.chest": ...` in the RPO file and `"container.chest": ...` in the vanilla lang file.
+2. An optional RPO expansion can appear at the start of the lang key (ignoring the exclusion modifier). The RPO expansion will appear in the RPO-compatible lang file, but not the vanilla-compatible lang file, meaning that it can be used in a lang key that generates in both files. For instance, `"${chest_exp}container.chest": ...` will generate as `"${chest_exp}container.chest": ...` in the RPO-compatible lang file and `"container.chest": ...` in the vanilla-compatible lang file.
 
 These two rules are the only parsing performed on the lang keys - any FES or RPO expansions in other positions will be copied verbatim. Furthermore, if the remainder of the lang key after removing the exclusion modifier and leading RPO expansion is not a lang key in the game's lang file, then the `{lang.value}` FES will contain a placeholder value. For instance, `"some.bad.lang.key": "It is a {lang.value}."` will generate as `"some.bad.lang.key": "It is a <?>."` in the output files.
 
 To include RPO expansions in the LFS, simply escape the opening brace so that the lang generator doesn't try to parse it as a FES. Example: `"${{color_switch}..."`
 
+> __Note:__ RPO expansions are not compatible with the vanilla game, and thus an alternative lang file must be supplied. For this reason, the lang generator creates up to four files for each language:
+> 1. The vanilla-compatible lang file `assets/minecraft/lang/{lang.unit}.json`. This contains all generated LFS stripped of the exclusion modifer and RPO expansion key.
+> 2. The RPO alternative redirection file `assets/minecraft/lang/{lang.unit}.json.rpo`. This file specifies that ResPackOpts should load the RPO-compatible lang file instead of the vanilla-compatible lang file.
+> 3. The RPO-compatible lang file `assets/minecraft/lang/respackopts/{lang.unit}.json`. This contains all generated LFS and RPO expansion keys stripped of the exclusion modifer.
+> 4. The RPO expansions file `assets/minecraft/lang/respackopts/{lang.unit}.json.rpo`. This contains all expansions defined in `EXPANSIONS`.
+
 ## Additional Notes
 
 1. When making multiple incremental adjustments to the LFS, it could become tedious to wait for every language to generate. To only generate 'en_us.json', comment out the for loop found in `gen_langs.py` at lines 389-391.
 2. The index file version cannot be automatically determined since different launchers choose the index file in different ways. Thus, the `index_file` mapping in `PATH` exists.
-3. `characters.py` includes information about character widths and a character width calculator. Simply run the script and a prompt will appear. Any text typed into the prompt will produce a number indicating the width of the entered text in pixels. Any unicode character can be specified using hex escape sequences, such as `\x__`, `\u____`, and `\U________`.
-4. GitHub removes and HTML and CSS tags and styling, so the example strings won't have proper color. An external MD viewer, like Visual Studio Code is required to see the colors. Here's what the examples are supposed to look like: ![Colorized Text](color_strings.png)
+3. The generated values will override any values previously contained in the files with matching keys, but will keep any other existing content. Thus, the generated files can contain manual content which is not removed during lang generation, such as langs for any ResPackOpts menu.
+4. `characters.py` includes information about character widths and a character width calculator. Simply run the script and a prompt will appear. Any text typed into the prompt will produce a number indicating the width of the entered text in pixels. Any unicode character can be specified using hex escape sequences, such as `\x__`, `\u____`, and `\U________`.
+5. GitHub removes and HTML and CSS tags and styling, so the example strings won't have proper color. An external MD viewer, like Visual Studio Code is required to see the colors. Here's what the examples are supposed to look like: ![Colorized Text](color_strings.png)
 
 <style>
   str {
