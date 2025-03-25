@@ -12,9 +12,11 @@ from file_tasks import *
 
 
 def apply_format(
-    lang_block: tuple[str, str, int, int], lang_value: str, lang_unit: str, gui_width: int
+    lang_block: tuple[str, str, int, int], lang_value: str, lang_unit: str, gui_width: int, title_align: str
 ) -> tuple[str, int, int]:
     text, alignment, before_space, after_space = lang_block
+    if alignment == ALIGN_START:
+        alignment = title_align
 
     # Insert original LANG unit and value
     text = text.replace(f"{{{LANG_TAG}.{LANG_UNIT}}}", lang_unit)
@@ -55,10 +57,8 @@ def arrange_segments(
     elif alignment == ALIGN_START:
         if title_align == ALIGN_LEFT:
             before_space, after_space = title_offset, 0
-            alignment = ALIGN_LEFT
         elif title_align == ALIGN_MIDDLE:
             before_space, after_space = gui_width - 2 * title_offset, 0
-            alignment = ALIGN_MIDDLE
 
     # Trim space at the start of the section
     while lang_formatters and lang_formatters[0][0] == SPACE_TAG:
@@ -263,7 +263,7 @@ def recombine_lang(
     gui_width, title_align, title_offset = GUI_TITLES.get(lang_key, GUI_TITLE_DEFAULT)
 
     # Process first LANG block
-    lang_text, first_pos, last_pos = apply_format(next(lang_blocks), lang_value, lang_unit, gui_width)
+    lang_text, first_pos, last_pos = apply_format(next(lang_blocks), lang_value, lang_unit, gui_width, title_align)
     if title_align == ALIGN_LEFT and first_pos != title_offset:
         lang_text = space_to_chars(first_pos - title_offset) + lang_text
         first_pos -= 1
@@ -275,7 +275,7 @@ def recombine_lang(
 
     # Process remaining LANG blocks
     for lang_block in lang_blocks:
-        text, start, last_pos = apply_format(lang_block, lang_value, lang_unit, gui_width)
+        text, start, last_pos = apply_format(lang_block, lang_value, lang_unit, gui_width, title_align)
         caret_min, caret_max = min(caret_min, start - 1), max(caret_max + 1, last_pos)
         lang_text += space_to_chars(start - caret - 1)
         lang_text += text
