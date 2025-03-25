@@ -68,9 +68,7 @@ def _extract_texture_char_widths(provider: dict[str, str | int | list[str]]) -> 
     return char_widths
 
 
-def _extract_unifont_char_widths(
-    uni_fname: str, blacklist: set[str], overrides: dict[str, int]
-) -> dict[str, int]:
+def _extract_unifont_char_widths(uni_fname: str, blacklist: set[str], overrides: dict[str, int]) -> dict[str, int]:
     # Find Unifont file
     for fname in _ls(_SCRIPT_ROOT):
         if fname.startswith(uni_fname):
@@ -93,9 +91,7 @@ def _extract_unifont_char_widths(
             # Transform each row of pixels (bit array) into an integer
             # Combine each row of a character using bit-or
             n = len(cdata) // 16
-            cdata = _or.reduce(
-                _fromiter((int(cdata[i : i + n], base=16) for i in range(0, len(cdata), n)), int)
-            )
+            cdata = _or.reduce(_fromiter((int(cdata[i : i + n], base=16) for i in range(0, len(cdata), n)), int))
             # width = MSB position - LSB position + 1
             # Unifont characters are rendered at half-size
             if cdata:
@@ -125,9 +121,9 @@ def _get_char_widths() -> dict[str, int]:
         "\u2007": 5,
         "\u2008": 5,
         "\u2009": 5,
-        "\u200A": 5,
-        "\u202F": 5,
-        "\u205F": 5,
+        "\u200a": 5,
+        "\u202f": 5,
+        "\u205f": 5,
         "\u3000": 9,
     }
 
@@ -141,14 +137,10 @@ def _get_char_widths() -> dict[str, int]:
             for uni_ranges in uni["size_overrides"]:
                 width = (uni_ranges["right"] - uni_ranges["left"] + 1) // 2
                 if width == 8:
-                    blacklist.update(
-                        chr(char)
-                        for char in range(ord(uni_ranges["from"]), ord(uni_ranges["to"]) + 1)
-                    )
+                    blacklist.update(chr(char) for char in range(ord(uni_ranges["from"]), ord(uni_ranges["to"]) + 1))
                 else:
                     overrides.update(
-                        (chr(char), width)
-                        for char in range(ord(uni_ranges["from"]), ord(uni_ranges["to"]) + 1)
+                        (chr(char), width) for char in range(ord(uni_ranges["from"]), ord(uni_ranges["to"]) + 1)
                     )
 
     # 3. unifont_all.hex
@@ -205,9 +197,7 @@ GLYPHS: dict[str, str] = {}
 with open(_path.join(_SCRIPT_ROOT, "../assets/minecraft/font/default.json")) as _def_file:
     for _glyph in _load(_def_file)["providers"]:
         GLYPHS[_glyph["file"].split("/")[-1][:-4]] = _glyph["chars"][0]
-        _png = _Img.open(
-            _path.join(_SCRIPT_ROOT, "../assets", _glyph["file"].replace(":", "/textures/"))
-        )
+        _png = _Img.open(_path.join(_SCRIPT_ROOT, "../assets", _glyph["file"].replace(":", "/textures/")))
         # TODO: Investigate further exactly how the game considers character widths for non-integer scaling amounts
         CHAR_WIDTHS[_glyph["chars"][0]] = _png.width * _glyph["height"] // _png.height
     del GLYPHS["empty"]

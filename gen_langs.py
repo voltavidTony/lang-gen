@@ -151,18 +151,14 @@ def parse_escape_sequence(ftype: str, fvalue: str, lang_key: str) -> tuple[str, 
     # Alignment escape sequence
     if ftype == ALIGN_TAG:
         if not fvalue in ALIGNMENTS:
-            raise ValueError(
-                f"Invalid alignment value '{fvalue}' in {lang_key} Expect one of "
-                + str(ALIGNMENTS)[1:-1]
-            )
+            raise ValueError(f"Invalid alignment value '{fvalue}' in {lang_key} Expect one of " + str(ALIGNMENTS)[1:-1])
         return ALIGN_TAG, fvalue
 
     # Formatting code escape sequence
     elif ftype == FORMAT_TAG:
         if not fvalue in FORMAT_TAGS:
             raise ValueError(
-                f"Invalid formatting value '{fvalue}' in {lang_key} Expect one of "
-                + str(FORMAT_TAGS.keys())[1:-1]
+                f"Invalid formatting value '{fvalue}' in {lang_key} Expect one of " + str(FORMAT_TAGS.keys())[1:-1]
             )
         return TEXT_TAG, f"§{FORMAT_TAGS[fvalue]}"
 
@@ -170,8 +166,7 @@ def parse_escape_sequence(ftype: str, fvalue: str, lang_key: str) -> tuple[str, 
     elif ftype == GLYPH_TAG:
         if not fvalue in GLYPHS:
             raise ValueError(
-                f"Invalid glyph value '{fvalue}' in {lang_key} "
-                "Check glyph definitions in resource pack"
+                f"Invalid glyph value '{fvalue}' in {lang_key} " "Check glyph definitions in resource pack"
             )
         return TEXT_TAG, GLYPHS[fvalue]
 
@@ -179,8 +174,7 @@ def parse_escape_sequence(ftype: str, fvalue: str, lang_key: str) -> tuple[str, 
     elif ftype == LANG_TAG:
         if not fvalue in (LANG_UNIT, LANG_VALUE):
             raise ValueError(
-                f"Invalid lang value '{fvalue}' in {lang_key} "
-                f"Expect one of '{LANG_UNIT}', '{LANG_VALUE}'"
+                f"Invalid lang value '{fvalue}' in {lang_key} " f"Expect one of '{LANG_UNIT}', '{LANG_VALUE}'"
             )
         return TEXT_TAG, f"{{{LANG_TAG}.{fvalue}}}"
 
@@ -339,8 +333,7 @@ def segment_lang_format(lang_key: str) -> Generator[tuple[str, str | int], Any, 
                 if not ftype in TAGS:
                     # Invalid escape command
                     raise ValueError(
-                        f"Invalid escape sequence command '{ftype}' in {lang_key} Expect one of "
-                        + str(TAGS[1:-1])
+                        f"Invalid escape sequence command '{ftype}' in {lang_key} Expect one of " + str(TAGS[1:-1])
                     )
 
                 # Parse escape sequence
@@ -397,9 +390,7 @@ def space_to_chars(amount: int) -> str:
         empty = lambda s: chr(0xF800 + s)
 
     # Construct space character sequence
-    return empty(128) * (amount // 128) + "".join(
-        empty(1 << n) for n in range(6, -1, -1) if (1 << n) & amount
-    )
+    return empty(128) * (amount // 128) + "".join(empty(1 << n) for n in range(6, -1, -1) if (1 << n) & amount)
 
 
 if __name__ == "__main__":

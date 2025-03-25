@@ -261,12 +261,8 @@ SPACE.update(
 HASH_TO_PATH = lambda h: _path.join(_path.expandvars(PATH["assets"]), "objects", h[:2], h)
 
 # Objects file provided by the game
-with open(
-    _path.join(_path.expandvars(PATH["assets"]), "indexes", PATH["index_file"])
-) as _index_file:
-    OBJECTS: dict[str, str] = {
-        obj: info["hash"] for obj, info in _load(_index_file)["objects"].items()
-    }
+with open(_path.join(_path.expandvars(PATH["assets"]), "indexes", PATH["index_file"])) as _index_file:
+    OBJECTS: dict[str, str] = {obj: info["hash"] for obj, info in _load(_index_file)["objects"].items()}
 
 # The path that the scripts are in
 SCRIPT_ROOT: str = _path.dirname(__file__)
