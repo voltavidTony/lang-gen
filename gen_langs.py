@@ -80,6 +80,20 @@ def arrange_segments(
     )
 
 
+def dump_keep_existing(obj: dict, path: str):
+    # Use existing data as defaults
+    try:
+        with open(path, "r", encoding="utf-8") as in_file:
+            content: dict = load(in_file)
+        content.update(obj)
+    except FileNotFoundError:
+        content = obj
+
+    # Save values
+    with open(path, "w", encoding="utf-8") as out_file:
+        dump(content, out_file)
+
+
 def generate_lang(
     lang_asset: str,
     lang_file: str,
@@ -88,7 +102,7 @@ def generate_lang(
     print("Processing", path.basename(lang_asset), "->", lang_file)
 
     # Obtain game lang strings
-    with open(lang_asset, encoding="utf-8") as lang_asset:
+    with open(lang_asset, "r", encoding="utf-8") as lang_asset:
         lang_asset = load(lang_asset)
 
     # Generate formatted lang strings
@@ -115,13 +129,22 @@ def generate_lang(
             rpo_content[lang_key] = lang_gen
 
     # Save lang strings to file
-    with open(lang_file, "w", encoding="utf-8") as lang_out:
-        dump(lang_content, lang_out)
+    dump_keep_existing(lang_content, lang_file)
 
     # Generate RPO file
     if GENERATE_RPO:
-        with open(f"{lang_file}.rpo", "w") as rpo_out:
-            dump(rpo_content, rpo_out)
+        # Generate redirection RPO file
+        dump_keep_existing(
+            {"condition": "false", "fallback": f"assets/minecraft/lang/respackopts/{lang_file}"},
+            f"{lang_file}.rpo",
+        )
+
+        # Generate RPO file
+        dump_keep_existing(rpo_content, f"respackopts/{lang_file}")
+
+        # Generate RPO expansions file
+        if EXPANSIONS:
+            dump_keep_existing({"expansions": EXPANSIONS}, f"respackopts/{lang_file}.rpo")
 
 
 def parse_escape_sequence(ftype: str, fvalue: str, lang_key: str) -> tuple[str, str | int]:

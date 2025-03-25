@@ -106,8 +106,26 @@ LANG = {
     "${discs}jukebox_song.minecraft.strad": "{lang.value} {format.white}{glyph.comparator}{format.reset}9{format.white}{glyph.clock}{format.reset}3:09.1",
     "${discs}jukebox_song.minecraft.wait": "{lang.value} {format.white}{glyph.comparator}{format.reset}12{format.white}{glyph.clock}{format.reset}3:59.1",
     "${discs}jukebox_song.minecraft.ward": "{lang.value} {format.white}{glyph.comparator}{format.reset}10{format.white}{glyph.clock}{format.reset}4:12.1",
-    "+condition": "false",
-    "+fallback": "assets/minecraft/lang/respackopts/{lang.unit}.json",
+}
+
+# ResPackOpts expansion definitions. Copied verbatim
+EXPANSIONS = {
+    "activation_duration": "tooltips.activation_duration ? '' : '#'",
+    "jukebox": "tooltips.jukebox ? '' : '#'",
+    "discs": "tooltips.discs ? '' : '#'",
+    "sculk_chart": "(!tooltips.activation_duration & tooltips.sculk_sensors) ? '' : '#'",
+    "sculk_duration": "(tooltips.activation_duration & !tooltips.sculk_sensors) ? '' : '#'",
+    "sculk_both": "(tooltips.activation_duration & tooltips.sculk_sensors) ? '' : '#'",
+    "ss_barrel": "(tooltips.ss_override.all | (tooltips.ss_override.select & tooltips.ss_barrel)) ? '' : '#'",
+    "ss_brewing": "(tooltips.ss_override.all | (tooltips.ss_override.select & tooltips.ss_brewing)) ? '' : '#'",
+    "ss_chests": "(tooltips.ss_override.all | (tooltips.ss_override.select & tooltips.ss_chests)) ? '' : '#'",
+    "ss_chest_minecart": "(tooltips.ss_override.all | (tooltips.ss_override.select & tooltips.ss_chest_minecart)) ? '' : '#'",
+    "ss_decorated_pot": "(tooltips.ss_override.all | (tooltips.ss_override.select & tooltips.ss_decorated_pot)) ? '' : '#'",
+    "ss_droppers": "(tooltips.ss_override.all | (tooltips.ss_override.select & tooltips.ss_droppers)) ? '' : '#'",
+    "ss_furnaces": "(tooltips.ss_override.all | (tooltips.ss_override.select & tooltips.ss_furnaces)) ? '' : '#'",
+    "ss_hopper": "(tooltips.ss_override.all | (tooltips.ss_override.select & tooltips.ss_hopper)) ? '' : '#'",
+    "ss_hopper_minecart": "(tooltips.ss_override.all | (tooltips.ss_override.select & tooltips.ss_hopper_minecart)) ? '' : '#'",
+    "ss_shulker": "(tooltips.ss_override.all | (tooltips.ss_override.select & tooltips.ss_shulker)) ? '' : '#'",
 }
 
 # STOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOP #
