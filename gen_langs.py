@@ -246,14 +246,15 @@ def recombine_lang(
     gui_width, title_align, title_offset = GUI_TITLES.get(lang_key, GUI_TITLE_DEFAULT)
 
     # Process first LANG block
-    lang_text, first_pos, caret = apply_format(next(lang_blocks), lang_value, lang_unit, gui_width)
+    lang_text, first_pos, last_pos = apply_format(next(lang_blocks), lang_value, lang_unit, gui_width)
     if title_align == ALIGN_LEFT and first_pos != title_offset:
         lang_text = space_to_chars(first_pos - title_offset) + lang_text
         first_pos -= 1
 
     # String maximum dimensions
     caret_min = first_pos
-    caret_max = caret
+    caret_max = last_pos
+    caret = last_pos
 
     # Process remaining LANG blocks
     for lang_block in lang_blocks:
