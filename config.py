@@ -69,7 +69,6 @@ LANG = {
     "+${sculk_chart}block.minecraft.sculk_sensor": "{lang.value}{align.left}{format.white}{glyph.sculk_sensor_guide}",
     "+${sculk_duration}block.minecraft.sculk_sensor": "{lang.value} {glyph.clock}1.5s",
     "${activation_duration}block.minecraft.target": "{lang.value} {glyph.clock}0.4s,1s",
-    "${activation_duration}block.minecraft.trapped_chest": "{lang.value} {glyph.clock}≥0.05s",
     "${activation_duration}block.minecraft.tripwire_hook": "{lang.value} {glyph.clock}≥0.5s",
     # Brewing Stand (brewing guide)
     "${ss_brewing}container.brewing": "{align.before}{format.white}{glyph.brewing_stand_guide_left}{align.middle}{format.reset}{lang.value}{align.after}{format.white}{glyph.brewing_stand_guide_right}",
