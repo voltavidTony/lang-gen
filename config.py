@@ -56,20 +56,21 @@ LANG = {
     "${activation_duration}block.minecraft.spruce_pressure_plate": "{lang.value} {glyph.clock}≥1s",
     "${activation_duration}block.minecraft.stone_pressure_plate": "{lang.value} {glyph.clock}≥1s",
     "${activation_duration}block.minecraft.warped_pressure_plate": "{lang.value} {glyph.clock}≥1s",
+    # Other Redstone Components (signal duration)
+    "${activation_duration}block.minecraft.detector_rail": "{lang.value} {glyph.clock}≥1s",
+    "${activation_duration}block.minecraft.lectern": "{lang.value} {glyph.clock}0.1s",
+    "${activation_duration}block.minecraft.lightning_rod": "{lang.value} {glyph.clock}0.4s",
+    "${activation_duration}block.minecraft.target": "{lang.value} {glyph.clock}0.4s,1s",
+    "${activation_duration}block.minecraft.tripwire_hook": "{lang.value} {glyph.clock}≥0.5s",
     # Other Redstone Components (signal duration & comparator chart)
     "${sculk_both}block.minecraft.calibrated_sculk_sensor": "{lang.value} {glyph.clock}0.5s{align.left}{format.white}{glyph.sculk_sensor_guide}",
     "+${sculk_chart}block.minecraft.calibrated_sculk_sensor": "{lang.value}{align.left}{format.white}{glyph.sculk_sensor_guide}",
     "+${sculk_duration}block.minecraft.calibrated_sculk_sensor": "{lang.value} {glyph.clock}0.5s",
     "${ss_decorated_pot}block.minecraft.decorated_pot": "{lang.value}{align.left}{format.white}{glyph.decorated_pot_guide}",
-    "${activation_duration}block.minecraft.detector_rail": "{lang.value} {glyph.clock}≥1s",
     "${jukebox}block.minecraft.jukebox": "{lang.value}{align.left}{format.white}{glyph.jukebox_guide}",
-    "${activation_duration}block.minecraft.lectern": "{lang.value} {glyph.clock}0.1s",
-    "${activation_duration}block.minecraft.lightning_rod": "{lang.value} {glyph.clock}0.4s",
     "${sculk_both}block.minecraft.sculk_sensor": "{lang.value} {glyph.clock}1.5s{align.left}{format.white}{glyph.sculk_sensor_guide}",
     "+${sculk_chart}block.minecraft.sculk_sensor": "{lang.value}{align.left}{format.white}{glyph.sculk_sensor_guide}",
     "+${sculk_duration}block.minecraft.sculk_sensor": "{lang.value} {glyph.clock}1.5s",
-    "${activation_duration}block.minecraft.target": "{lang.value} {glyph.clock}0.4s,1s",
-    "${activation_duration}block.minecraft.tripwire_hook": "{lang.value} {glyph.clock}≥0.5s",
     # Brewing Stand (brewing guide)
     "${ss_brewing}container.brewing": "{align.before}{format.white}{glyph.brewing_stand_guide_left}{align.middle}{format.reset}{lang.value}{align.after}{format.white}{glyph.brewing_stand_guide_right}",
     # Container Inventories (comparator chart)
@@ -110,11 +111,11 @@ LANG = {
 # ResPackOpts expansion definitions. Copied verbatim
 EXPANSIONS = {
     "activation_duration": "tooltips.activation_duration ? '' : '#'",
-    "jukebox": "tooltips.jukebox ? '' : '#'",
-    "discs": "tooltips.discs ? '' : '#'",
+    "sculk_both": "(tooltips.activation_duration & tooltips.sculk_sensors) ? '' : '#'",
     "sculk_chart": "(!tooltips.activation_duration & tooltips.sculk_sensors) ? '' : '#'",
     "sculk_duration": "(tooltips.activation_duration & !tooltips.sculk_sensors) ? '' : '#'",
-    "sculk_both": "(tooltips.activation_duration & tooltips.sculk_sensors) ? '' : '#'",
+    "jukebox": "tooltips.jukebox ? '' : '#'",
+    "discs": "tooltips.discs ? '' : '#'",
     "ss_barrel": "(tooltips.ss_override.all | (tooltips.ss_override.select & tooltips.ss_barrel)) ? '' : '#'",
     "ss_brewing": "(tooltips.ss_override.all | (tooltips.ss_override.select & tooltips.ss_brewing)) ? '' : '#'",
     "ss_chests": "(tooltips.ss_override.all | (tooltips.ss_override.select & tooltips.ss_chests)) ? '' : '#'",
