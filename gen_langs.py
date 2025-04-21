@@ -103,7 +103,7 @@ def generate_lang(
 
     # Obtain game lang strings
     with open(lang_asset, "r", encoding="utf-8") as lang_asset:
-        lang_asset = load(lang_asset)
+        lang_asset: dict[str, str] = load(lang_asset)
 
     # Generate formatted lang strings
     lang_unit = lang_file.split(".")[0]
@@ -129,22 +129,16 @@ def generate_lang(
             rpo_content[lang_key] = lang_gen
 
     # Save lang strings to file
-    dump_keep_existing(lang_content, lang_file)
+    dump_keep_existing(lang_content, f"lang/{lang_file}")
 
     # Generate RPO file
     if GENERATE_RPO:
-        # Generate redirection RPO file
-        dump_keep_existing(
-            {"condition": "false", "fallback": f"assets/minecraft/lang/respackopts/{lang_file}"},
-            f"{lang_file}.rpo",
-        )
-
         # Generate RPO file
-        dump_keep_existing(rpo_content, f"respackopts/{lang_file}")
+        dump_keep_existing(rpo_content, f"lang_rpo/{lang_file}")
 
         # Generate RPO expansions file
         if EXPANSIONS:
-            dump_keep_existing({"expansions": EXPANSIONS}, f"respackopts/{lang_file}.rpo")
+            dump_keep_existing({"expansions": EXPANSIONS}, f"lang_rpo/{lang_file}.rpo")
 
 
 def parse_escape_sequence(ftype: str, fvalue: str, lang_key: str) -> tuple[str, str | int]:
@@ -400,11 +394,14 @@ if __name__ == "__main__":
 
     # LANG file generation
     print("Generating LANG files..")
-    chdir(path.join(SCRIPT_ROOT, "../assets/minecraft/lang"))
+    chdir(path.join(SCRIPT_ROOT, "../assets/minecraft"))
     generate_lang(path.join(SCRIPT_ROOT, "en_us.json"), "en_us.json", lang_format)
     for obj in OBJECTS:
         if obj.startswith("minecraft/lang/"):
             generate_lang(HASH_TO_PATH(OBJECTS[obj]), path.basename(obj), lang_format)
+    if GENERATE_RPO:
+        # Generate redirection RPO file
+        dump_keep_existing({"condition": "false", "fallback": "assets/minecraft/lang_rpo"}, "lang/.rpo")
 
     # Resource pack creation
     if PATH["rp_dest"]:
