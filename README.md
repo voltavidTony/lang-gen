@@ -253,7 +253,7 @@ The following steps describe the general process of configuring the lang generat
 
 4. `LANG` contains the LFS, which are used to build the lang strings that appear in-game. Each lang key maps to a string consisting of a series of text characters and FES, further explained in the [Lang Formatting](#lang-formatting) section. Special RPO rules apply to the lang keys, explained in the [ResPackOpts](#respackopts) section.
 
-5. `EXPANSIONS` contains the RPO expansions for the target resource pack, which allow parts of the langs to contain dynamic values. If expansions are not used, then `EXPANSIONS` should be made empty, not removed.
+5. `KEY_VALUE_DEFAULTS_AND_FILTER` contains a mapping of filepaths to default values for those files. The filepaths can contain wildcards to create a definition for a type of file instead of a specific file, for instance all vanilla-compatible lang files. The values also act as a whitelist of values that persist across file generations to allow the removal of LFS from the lang files without requiring manual editing. In other words, only keys which are generated or specified in the defaults will appear in the new files. As such, a file not specified in the defaults will only contain generate values.
 
 ### Preparation
 
@@ -379,17 +379,19 @@ These two rules are the only parsing performed on the lang keys - any FES or RPO
 
 To include RPO expansions in the LFS, simply escape the opening brace so that the lang generator doesn't try to parse it as a FES. Example: `"${{color_switch}..."`
 
-> __Note:__ RPO expansions are not compatible with the vanilla game, and thus an alternative lang file must be supplied. For this reason, the lang generator creates up to four files for each language:
-> 1. The vanilla-compatible lang file `assets/minecraft/lang/{lang.unit}.json`. This contains all generated LFS stripped of the exclusion modifer and RPO expansion key.
-> 2. The RPO alternative redirection file `assets/minecraft/lang/{lang.unit}.json.rpo`. This file specifies that ResPackOpts should load the RPO-compatible lang file instead of the vanilla-compatible lang file.
-> 3. The RPO-compatible lang file `assets/minecraft/lang/respackopts/{lang.unit}.json`. This contains all generated LFS and RPO expansion keys stripped of the exclusion modifer.
-> 4. The RPO expansions file `assets/minecraft/lang/respackopts/{lang.unit}.json.rpo`. This contains all expansions defined in `EXPANSIONS`.
+> __Note:__ RPO expansions are not compatible with the vanilla game, and thus an alternative lang file must be supplied. For this reason, the lang generator creates up to three files for each language:
+>
+> 1. The vanilla-compatible lang file `assets/minecraft/lang/{lang.unit}.json`
+> 2. The RPO-compatible lang file `assets/minecraft/lang_rpo/{lang.unit}.json`
+> 3. The RPO expansions file `assets/minecraft/lang_rpo/{lang.unit}.json.rpo`
+>
+> In addition, it generates the RPO meta-file `assets/minecraft/lang/.rpo` which specifies to use the `lang_rpo` folder instead of the `lang` folder when RPO features are enabled
 
 ## Additional Notes
 
 1. When making multiple incremental adjustments to the LFS, it could become tedious to wait for every language to generate. To only generate 'en_us.json', comment out the for loop found in `gen_langs.py` at lines 389-391.
 2. The index file version cannot be automatically determined since different launchers choose the index file in different ways. Thus, the `index_file` mapping in `PATH` exists.
-3. The generated values will override any values previously contained in the files with matching keys, but will keep any other existing content. Thus, the generated files can contain manual content which is not removed during lang generation, such as langs for any ResPackOpts menu.
+3. The lang generator currently requires the presence of the `assets/minecraft/lang` and `assets/minecraft/lang_rpo` folders, which must be created manually.
 4. `characters.py` includes information about character widths and a character width calculator. Simply run the script and a prompt will appear. Any text typed into the prompt will produce a number indicating the width of the entered text in pixels. Any unicode character can be specified using hex escape sequences, such as `\x__`, `\u____`, and `\U________`.
 5. GitHub removes and HTML and CSS tags and styling, so the example strings won't have proper color. An external MD viewer, like Visual Studio Code is required to see the colors. Here's what the examples are supposed to look like: ![Colorized Text](color_strings.png)
 

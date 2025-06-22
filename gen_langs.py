@@ -2,6 +2,7 @@
 # You do not need to modify this file to edit the generated LANG strings!  #
 # STOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOP #
 
+from fnmatch import fnmatch
 from json import dump, load
 from os import chdir, path
 from typing import Any, Generator, Iterator
@@ -80,18 +81,28 @@ def arrange_segments(
     )
 
 
-def dump_keep_existing(obj: dict, path: str):
-    # Use existing data as defaults
+def dump_with_defaults(path: str, content: dict = {}):
+    # Get default values
+    defaults = {}
+    for pattern in KEY_VALUE_DEFAULTS_AND_FILTER.keys():
+        if fnmatch(path, pattern):
+            defaults = KEY_VALUE_DEFAULTS_AND_FILTER[pattern]
+            break
+
+    # Overwrite with existing values
     try:
         with open(path, "r", encoding="utf-8") as in_file:
-            content: dict = load(in_file)
-        content.update(obj)
+            existing: dict = load(in_file)
+            defaults.update({item: existing[item] for item in defaults if item in existing})
     except FileNotFoundError:
-        content = obj
+        pass
 
-    # Save values
+    # Apply new values
+    defaults.update(content)
+
+    # Save to file
     with open(path, "w", encoding="utf-8") as out_file:
-        dump(content, out_file)
+        dump(defaults, out_file)
 
 
 def generate_lang(
@@ -129,16 +140,15 @@ def generate_lang(
             rpo_content[lang_key] = lang_gen
 
     # Save lang strings to file
-    dump_keep_existing(lang_content, f"lang/{lang_file}")
+    dump_with_defaults(f"lang/{lang_file}", lang_content)
 
     # Generate RPO file
     if GENERATE_RPO:
         # Generate RPO file
-        dump_keep_existing(rpo_content, f"lang_rpo/{lang_file}")
+        dump_with_defaults(f"lang_rpo/{lang_file}", rpo_content)
 
         # Generate RPO expansions file
-        if EXPANSIONS:
-            dump_keep_existing({"expansions": EXPANSIONS}, f"lang_rpo/{lang_file}.rpo")
+        dump_with_defaults(f"lang_rpo/{lang_file}.rpo")
 
 
 def parse_escape_sequence(ftype: str, fvalue: str, lang_key: str) -> tuple[str, str | int]:
@@ -401,7 +411,7 @@ if __name__ == "__main__":
             generate_lang(HASH_TO_PATH(OBJECTS[obj]), path.basename(obj), lang_format)
     if GENERATE_RPO:
         # Generate redirection RPO file
-        dump_keep_existing({"condition": "false", "fallback": "assets/minecraft/lang_rpo"}, "lang/.rpo")
+        dump_with_defaults("lang/.rpo")
 
     # Resource pack creation
     if PATH["rp_dest"]:
