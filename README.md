@@ -29,7 +29,7 @@ This set of scripts is designed to aid in the creation of formatted item names, 
 
 ## Bugs
 
-[MC-278459 unifont.json contains trailing comma](https://bugs.mojang.com/browse/MC-278459) will prevent lang generation, since Python's JSON parser is not lenient towards syntax errors, while the game's parser is. After obtaining the files in the [Preparation](#preparation) step, `unifont.json` must be manually updated to fix this bug by removing the stray comma on line 100 (The bug reports line 101, even though the images show line 100). Since this bug does not manifest in the game, and since the GNU unifont itself is unlikely to receive an update, it is unclear if this bug will be fixed in the future.
+[MC-278459 unifont.json contains trailing comma](https://bugs.mojang.com/browse/MC-278459) will prevent lang generation, since Python's JSON parser is not lenient towards syntax errors, while the game's parser is. After obtaining the files in the [Preparation](#preparation) step, `unifont.json` must be manually updated to fix this bug by removing the stray comma on line 100 (The bug reports line 101, even though the images show line 100). This bug has been fixed as of game version 25w18a (fourth snapshot release for game version 1.21.6, released Apr 29, 2025).
 
 ## Abbreviations
 
