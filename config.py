@@ -3,11 +3,11 @@ PATH = {
     # The Minecraft assets folder (contains 'indexes', 'objects', and 'skins' subfolders)
     "assets": "%AppData%/.minecraft/assets",
     # Which index file to use when looking for LANG files (in the 'indexes' subfolder)
-    "index_file": "19.json",
+    "index_file": "26.json",
     # Path to the Minecraft JAR archive
-    "mc_jar": "%AppData%/.minecraft/versions/1.21.4/1.21.4.jar",
+    "mc_jar": "%AppData%/.minecraft/versions/1.21.7/1.21.7.jar",
     # Filepath to save the resource pack to
-    "rp_dest": "%AppData%/.minecraft/resourcepacks/Redstone Tweaks 2.4.7.zip",
+    "rp_dest": "%AppData%/.minecraft/resourcepacks/Redstone Tweaks 2.5.1.zip",
 }
 
 # Space around container inventory GUI
@@ -86,25 +86,27 @@ LANG = {
     "${ss_chest_minecart}entity.minecraft.chest_minecart": "{lang.value}{align.after}{format.white}{glyph.chest_guide}",
     "${ss_hopper_minecart}entity.minecraft.hopper_minecart": "{lang.value}{align.after}{format.white}{glyph.hopper_guide}",
     # Music Discs (signal strength & song duration)
-    "${discs}jukebox_song.minecraft.11": "{lang.value} {format.white}{glyph.comparator}{format.reset}11{format.white}{glyph.clock}{format.reset}1:12.1",
-    "${discs}jukebox_song.minecraft.13": "{lang.value} {format.white}{glyph.comparator}{format.reset}1{format.white}{glyph.clock}{format.reset}2:59.1",
-    "${discs}jukebox_song.minecraft.5": "{lang.value} {format.white}{glyph.comparator}{format.reset}15{format.white}{glyph.clock}{format.reset}2:59.1",
-    "${discs}jukebox_song.minecraft.blocks": "{lang.value} {format.white}{glyph.comparator}{format.reset}3{format.white}{glyph.clock}{format.reset}5:46.1",
-    "${discs}jukebox_song.minecraft.cat": "{lang.value} {format.white}{glyph.comparator}{format.reset}2{format.white}{glyph.clock}{format.reset}3:06.1",
-    "${discs}jukebox_song.minecraft.chirp": "{lang.value} {format.white}{glyph.comparator}{format.reset}4{format.white}{glyph.clock}{format.reset}3:06.1",
-    "${discs}jukebox_song.minecraft.creator_music_box": "{lang.value} {format.white}{glyph.comparator}{format.reset}11{format.white}{glyph.clock}{format.reset}1:14.1",
-    "${discs}jukebox_song.minecraft.creator": "{lang.value} {format.white}{glyph.comparator}{format.reset}12{format.white}{glyph.clock}{format.reset}2:57.1",
-    "${discs}jukebox_song.minecraft.far": "{lang.value} {format.white}{glyph.comparator}{format.reset}5{format.white}{glyph.clock}{format.reset}2:55.1",
-    "${discs}jukebox_song.minecraft.mall": "{lang.value} {format.white}{glyph.comparator}{format.reset}6{format.white}{glyph.clock}{format.reset}3:18.1",
-    "${discs}jukebox_song.minecraft.mellohi": "{lang.value} {format.white}{glyph.comparator}{format.reset}7{format.white}{glyph.clock}{format.reset}1:37.1",
-    "${discs}jukebox_song.minecraft.otherside": "{lang.value} {format.white}{glyph.comparator}{format.reset}14{format.white}{glyph.clock}{format.reset}3:16.1",
-    "${discs}jukebox_song.minecraft.pigstep": "{lang.value} {format.white}{glyph.comparator}{format.reset}13{format.white}{glyph.clock}{format.reset}2:30.1",
-    "${discs}jukebox_song.minecraft.precipice": "{lang.value} {format.white}{glyph.comparator}{format.reset}13{format.white}{glyph.clock}{format.reset}5:00.1",
-    "${discs}jukebox_song.minecraft.relic": "{lang.value} {format.white}{glyph.comparator}{format.reset}14{format.white}{glyph.clock}{format.reset}3:39.1",
-    "${discs}jukebox_song.minecraft.stal": "{lang.value} {format.white}{glyph.comparator}{format.reset}8{format.white}{glyph.clock}{format.reset}2:31.1",
-    "${discs}jukebox_song.minecraft.strad": "{lang.value} {format.white}{glyph.comparator}{format.reset}9{format.white}{glyph.clock}{format.reset}3:09.1",
-    "${discs}jukebox_song.minecraft.wait": "{lang.value} {format.white}{glyph.comparator}{format.reset}12{format.white}{glyph.clock}{format.reset}3:59.1",
-    "${discs}jukebox_song.minecraft.ward": "{lang.value} {format.white}{glyph.comparator}{format.reset}10{format.white}{glyph.clock}{format.reset}4:12.1",
+    "${discs}jukebox_song.minecraft.11": "{lang.value} {format.white}{glyph.comparator}{format.gray}11 {format.white}{glyph.clock}{format.gray}1:12.1",
+    "${discs}jukebox_song.minecraft.13": "{lang.value} {format.white}{glyph.comparator}{format.gray}1 {format.white}{glyph.clock}{format.gray}2:59.1",
+    "${discs}jukebox_song.minecraft.5": "{lang.value} {format.white}{glyph.comparator}{format.gray}15 {format.white}{glyph.clock}{format.gray}2:59.1",
+    "${discs}jukebox_song.minecraft.blocks": "{lang.value} {format.white}{glyph.comparator}{format.gray}3 {format.white}{glyph.clock}{format.gray}5:46.1",
+    "${discs}jukebox_song.minecraft.cat": "{lang.value} {format.white}{glyph.comparator}{format.gray}2 {format.white}{glyph.clock}{format.gray}3:06.1",
+    "${discs}jukebox_song.minecraft.chirp": "{lang.value} {format.white}{glyph.comparator}{format.gray}4 {format.white}{glyph.clock}{format.gray}3:06.1",
+    "${discs}jukebox_song.minecraft.creator_music_box": "{lang.value} {format.white}{glyph.comparator}{format.gray}11 {format.white}{glyph.clock}{format.gray}1:14.1",
+    "${discs}jukebox_song.minecraft.creator": "{lang.value} {format.white}{glyph.comparator}{format.gray}12 {format.white}{glyph.clock}{format.gray}2:57.1",
+    "${discs}jukebox_song.minecraft.far": "{lang.value} {format.white}{glyph.comparator}{format.gray}5 {format.white}{glyph.clock}{format.gray}2:55.1",
+    "${discs}jukebox_song.minecraft.lava_chicken": "{lang.value} {format.white}{glyph.comparator}{format.gray}9 {format.white}{glyph.clock}{format.gray}2:15.1",
+    "${discs}jukebox_song.minecraft.mall": "{lang.value} {format.white}{glyph.comparator}{format.gray}6 {format.white}{glyph.clock}{format.gray}3:18.1",
+    "${discs}jukebox_song.minecraft.mellohi": "{lang.value} {format.white}{glyph.comparator}{format.gray}7 {format.white}{glyph.clock}{format.gray}1:37.1",
+    "${discs}jukebox_song.minecraft.otherside": "{lang.value} {format.white}{glyph.comparator}{format.gray}14 {format.white}{glyph.clock}{format.gray}3:16.1",
+    "${discs}jukebox_song.minecraft.pigstep": "{lang.value} {format.white}{glyph.comparator}{format.gray}13 {format.white}{glyph.clock}{format.gray}2:30.1",
+    "${discs}jukebox_song.minecraft.precipice": "{lang.value} {format.white}{glyph.comparator}{format.gray}13 {format.white}{glyph.clock}{format.gray}5:00.1",
+    "${discs}jukebox_song.minecraft.relic": "{lang.value} {format.white}{glyph.comparator}{format.gray}14 {format.white}{glyph.clock}{format.gray}3:39.1",
+    "${discs}jukebox_song.minecraft.stal": "{lang.value} {format.white}{glyph.comparator}{format.gray}8 {format.white}{glyph.clock}{format.gray}2:31.1",
+    "${discs}jukebox_song.minecraft.strad": "{lang.value} {format.white}{glyph.comparator}{format.gray}9 {format.white}{glyph.clock}{format.gray}3:09.1",
+    "${discs}jukebox_song.minecraft.tears": "{lang.value} {format.white}{glyph.comparator}{format.gray}10 {format.white}{glyph.clock}{format.gray}2:56.1",
+    "${discs}jukebox_song.minecraft.wait": "{lang.value} {format.white}{glyph.comparator}{format.gray}12 {format.white}{glyph.clock}{format.gray}3:59.1",
+    "${discs}jukebox_song.minecraft.ward": "{lang.value} {format.white}{glyph.comparator}{format.gray}10 {format.white}{glyph.clock}{format.gray}4:12.1",
 }
 
 # The default and carried-over values in each file. See the README to learn more about how they work
