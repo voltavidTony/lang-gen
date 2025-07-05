@@ -3,7 +3,7 @@
 # STOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOPSTOP #
 
 from os import chdir as _cd, path as _path, walk as _walk
-from zipfile import ZipFile as _ZipFile
+from zipfile import ZipFile as _ZipFile, ZIP_DEFLATED as _ZIP_DEFLATED
 
 from config import (
     HASH_TO_PATH as _HTP,
@@ -42,7 +42,7 @@ def recompress_rp():
     _cd(_path.join(_SCRIPT_ROOT, ".."))
 
     # Compress resource pack files and save the archive to the specified destination
-    with _ZipFile(_path.expandvars(_PATH["rp_dest"]), "w") as rp_archive:
+    with _ZipFile(_path.expandvars(_PATH["rp_dest"]), "w", _ZIP_DEFLATED, True, 9) as rp_archive:
         for root, _, files in _walk("."):
             if not _path.abspath(root).startswith(_SCRIPT_ROOT):
                 for file in files:
